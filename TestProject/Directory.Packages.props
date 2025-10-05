@@ -47,5 +47,18 @@
     <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.12.0" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.12.0" />
     <PackageVersion Include="Aspire.Hosting.Testing" Version="9.0.0" />
+    <!-- Microsoft Agent Framework -->
+    <PackageVersion Include="Microsoft.Agents.AI" Version="1.2.0-preview" />
+    <PackageVersion Include="Microsoft.Agents.Workflows" Version="1.2.0-preview" />
+    <PackageVersion Include="Microsoft.Extensions.AI" Version="9.10.0-preview.1.25171.11" />
+    <PackageVersion Include="Microsoft.Extensions.AI.Abstractions" Version="9.10.0-preview.1.25171.11" />
+    <PackageVersion Include="Azure.AI.OpenAI" Version="2.1.0" />
+    <!-- Azure Services -->
+    <PackageVersion Include="Azure.Data.Tables" Version="12.9.1" />
+    <PackageVersion Include="Kusto.Data" Version="12.3.4" />
+    <PackageVersion Include="Microsoft.TeamFoundationServer.Client" Version="19.245.1" />
+    <PackageVersion Include="Microsoft.VisualStudio.Services.Client" Version="19.245.1" />
+    <!-- SignalR -->
+    <PackageVersion Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.6" />
   </ItemGroup>
 </Project>

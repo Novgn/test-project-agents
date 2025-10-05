@@ -1,7 +1,5 @@
 ﻿global using System.Runtime.CompilerServices;
 global using Ardalis.SharedKernel;
-global using TestProject.Core.ContributorAggregate;
-global using TestProject.UseCases.Contributors.Create;
 global using Shouldly;
 global using MediatR;
 global using Microsoft.Extensions.Logging;

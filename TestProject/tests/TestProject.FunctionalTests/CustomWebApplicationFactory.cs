@@ -30,7 +30,6 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
           .GetRequiredService<ILogger<CustomWebApplicationFactory<TProgram>>>();
 
       // Reset Sqlite database for each test run
-      // If using a real database, you'll likely want to remove this step.
       db.Database.EnsureDeleted();
 
       // Ensure the database is created.
@@ -38,12 +37,8 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
 
       try
       {
-        // Can also skip creating the items
-        //if (!db.ToDoItems.Any())
-        //{
         // Seed the database with test data.
         SeedData.PopulateTestDataAsync(db).Wait();
-        //}
       }
       catch (Exception ex)
       {
@@ -61,25 +56,6 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
         .ConfigureServices(services =>
         {
           // Configure test dependencies here
-
-          //// Remove the app's ApplicationDbContext registration.
-          //var descriptor = services.SingleOrDefault(
-          //d => d.ServiceType ==
-          //    typeof(DbContextOptions<AppDbContext>));
-
-          //if (descriptor != null)
-          //{
-          //  services.Remove(descriptor);
-          //}
-
-          //// This should be set for each individual test run
-          //string inMemoryCollectionName = Guid.NewGuid().ToString();
-
-          //// Add ApplicationDbContext using an in-memory database for testing.
-          //services.AddDbContext<AppDbContext>(options =>
-          //{
-          //  options.UseInMemoryDatabase(inMemoryCollectionName);
-          //});
         });
   }
 }

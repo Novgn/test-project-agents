@@ -1,5 +1,4 @@
-﻿using TestProject.UseCases.Contributors.Create;
-using TestProject.Web.Configurations;
+﻿using TestProject.Web.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,14 +22,7 @@ builder.Services.AddFastEndpoints()
                 .SwaggerDocument(o =>
                 {
                   o.ShortSchemaNames = true;
-                })
-                .AddCommandMiddleware(c =>
-                {
-                  c.Register(typeof(CommandLogger<,>));
                 });
-
-// wire up commands
-//builder.Services.AddTransient<ICommandHandler<CreateContributorCommand2,Result<int>>, CreateContributorCommandHandler2>();
 
 builder.AddServiceDefaults();
 

@@ -1,9 +1,4 @@
-﻿using TestProject.Core.Interfaces;
-using TestProject.Core.Services;
-using TestProject.Infrastructure.Data;
-using TestProject.Infrastructure.Data.Queries;
-using TestProject.UseCases.Contributors.List;
-
+﻿using TestProject.Infrastructure.Data;
 
 namespace TestProject.Infrastructure;
 public static class InfrastructureServiceExtensions
@@ -19,10 +14,7 @@ public static class InfrastructureServiceExtensions
      options.UseSqlite(connectionString));
 
     services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>))
-           .AddScoped(typeof(IReadRepository<>), typeof(EfRepository<>))
-           .AddScoped<IListContributorsQueryService, ListContributorsQueryService>()
-           .AddScoped<IDeleteContributorService, DeleteContributorService>();
-
+           .AddScoped(typeof(IReadRepository<>), typeof(EfRepository<>));
 
     logger.LogInformation("{Project} services registered", "Infrastructure");
 

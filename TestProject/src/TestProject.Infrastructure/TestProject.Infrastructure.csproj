@@ -15,6 +15,15 @@
     <PackageReference Include="Microsoft.Extensions.Logging" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
     <PackageReference Include="SQLite" />
+    <!-- Agent Framework -->
+    <PackageReference Include="Microsoft.Agents.AI" />
+    <PackageReference Include="Microsoft.Agents.Workflows" />
+    <PackageReference Include="Microsoft.Extensions.AI" />
+    <PackageReference Include="Azure.AI.OpenAI" />
+    <!-- Azure Services -->
+    <PackageReference Include="Kusto.Data" />
+    <PackageReference Include="Microsoft.TeamFoundationServer.Client" />
+    <PackageReference Include="Microsoft.VisualStudio.Services.Client" />
   </ItemGroup>
   
   <ItemGroup>

@@ -1,6 +1,4 @@
-﻿using TestProject.Core.Interfaces;
-using TestProject.Infrastructure;
-using TestProject.Infrastructure.Email;
+﻿using TestProject.Infrastructure;
 
 namespace TestProject.Web.Configurations;
 
@@ -11,26 +9,8 @@ public static class ServiceConfigs
     services.AddInfrastructureServices(builder.Configuration, logger)
             .AddMediatrConfigs();
 
-
-    if (builder.Environment.IsDevelopment())
-    {
-      // Use a local test email server
-      // See: https://ardalis.com/configuring-a-local-test-email-server/
-      services.AddScoped<IEmailSender, MimeKitEmailSender>();
-
-      // Otherwise use this:
-      //builder.Services.AddScoped<IEmailSender, FakeEmailSender>();
-
-    }
-    else
-    {
-      services.AddScoped<IEmailSender, MimeKitEmailSender>();
-    }
-
-    logger.LogInformation("{Project} services registered", "Mediatr and Email Sender");
+    logger.LogInformation("{Project} services registered", "Application Services");
 
     return services;
   }
-
-
 }

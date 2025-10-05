@@ -1,5 +1,4 @@
 ﻿using Ardalis.ListStartupServices;
-using TestProject.Infrastructure.Email;
 
 namespace TestProject.Web.Configurations;
 
@@ -10,9 +9,8 @@ public static class OptionConfigs
                                                     Microsoft.Extensions.Logging.ILogger logger,
                                                     WebApplicationBuilder builder)
   {
-    services.Configure<MailserverConfiguration>(configuration.GetSection("Mailserver"))
     // Configure Web Behavior
-    .Configure<CookiePolicyOptions>(options =>
+    services.Configure<CookiePolicyOptions>(options =>
     {
       options.CheckConsentNeeded = context => true;
       options.MinimumSameSitePolicy = SameSiteMode.None;
