@@ -5,3 +5,6 @@ global using Ardalis.SmartEnum;
 global using Ardalis.Specification;
 global using MediatR;
 global using Microsoft.Extensions.Logging;
+global using TestProject.Core.AgentWorkflowAggregate;
+global using TestProject.Core.DetectorAggregate;
+global using TestProject.Core.Agents;

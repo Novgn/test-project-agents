@@ -1,0 +1,83 @@
+2025-10-06 14:46:13.787 -04:00 [INF] Application is shutting down...
+2025-10-06 15:30:28.849 -04:00 [INF] Registered 4 endpoints in 116 milliseconds.
+2025-10-06 15:30:28.887 -04:00 [INF] No validators found in the system!
+2025-10-06 15:30:29.167 -04:00 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*) FROM "sqlite_master" WHERE "type" = 'table' AND "rootpage" IS NOT NULL;
+2025-10-06 15:30:29.208 -04:00 [INF] Now listening on: http://localhost:5000
+2025-10-06 15:30:29.209 -04:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-10-06 15:30:29.209 -04:00 [INF] Hosting environment: Development
+2025-10-06 15:30:29.209 -04:00 [INF] Content root path: /Users/urelmattis/Developer/test-project-agents/TestProject/src/TestProject.Web
+2025-10-06 15:31:25.888 -04:00 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:5000/api/workflows/start - null null
+2025-10-06 15:31:25.907 -04:00 [INF] CORS policy execution successful.
+2025-10-06 15:31:25.910 -04:00 [INF] Request finished HTTP/1.1 OPTIONS http://localhost:5000/api/workflows/start - 204 null null 22.9708ms
+2025-10-06 15:31:25.915 -04:00 [INF] Request starting HTTP/1.1 POST http://localhost:5000/api/workflows/start - application/json 40
+2025-10-06 15:31:25.916 -04:00 [INF] CORS policy execution successful.
+2025-10-06 15:31:25.918 -04:00 [INF] Executing endpoint 'HTTP: POST /api/workflows/start'
+2025-10-06 15:31:25.943 -04:00 [INF] Handling StartWorkflowCommand
+2025-10-06 15:31:25.943 -04:00 [INF] Property UserId : user123
+2025-10-06 15:31:25.943 -04:00 [INF] Property ETWDetails : test
+2025-10-06 15:31:25.945 -04:00 [INF] Executed endpoint 'HTTP: POST /api/workflows/start'
+2025-10-06 15:31:25.945 -04:00 [ERR] An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: No service for type 'MediatR.IRequestHandler`2[TestProject.UseCases.Workflows.StartWorkflow.StartWorkflowCommand,Ardalis.Result.Result`1[System.Guid]]' has been registered.
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)
+   at MediatR.Wrappers.RequestHandlerWrapperImpl`2.<>c__DisplayClass1_0.<Handle>g__Handler|0(CancellationToken t)
+   at Ardalis.SharedKernel.LoggingBehavior`2.Handle(TRequest request, RequestHandlerDelegate`1 next, CancellationToken cancellationToken)
+   at TestProject.Web.Workflows.Start.HandleAsync(StartWorkflowRequest req, CancellationToken ct) in /Users/urelmattis/Developer/test-project-agents/TestProject/src/TestProject.Web/Workflows/Start.cs:line 32
+   at FastEndpoints.Endpoint`2.ExecAsync(CancellationToken ct)
+   at FastEndpoints.Endpoint`2.ExecAsync(CancellationToken ct)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|7_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at NSwag.AspNetCore.Middlewares.SwaggerUiIndexMiddleware.Invoke(HttpContext context)
+   at NSwag.AspNetCore.Middlewares.RedirectToIndexMiddleware.Invoke(HttpContext context)
+   at NSwag.AspNetCore.Middlewares.OpenApiDocumentMiddleware.Invoke(HttpContext context)
+   at Ardalis.ListStartupServices.ShowAllServicesMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-10-06 15:31:25.952 -04:00 [INF] Request finished HTTP/1.1 POST http://localhost:5000/api/workflows/start - 500 null text/plain; charset=utf-8 37.0917ms
+2025-10-06 15:33:11.187 -04:00 [INF] Application is shutting down...
+2025-10-06 15:35:09.810 -04:00 [INF] Registered 3 endpoints in 87 milliseconds.
+2025-10-06 15:35:09.843 -04:00 [INF] No validators found in the system!
+2025-10-06 15:35:10.105 -04:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*) FROM "sqlite_master" WHERE "type" = 'table' AND "rootpage" IS NOT NULL;
+2025-10-06 15:35:10.144 -04:00 [INF] Now listening on: http://localhost:5000
+2025-10-06 15:35:10.144 -04:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-10-06 15:35:10.144 -04:00 [INF] Hosting environment: Development
+2025-10-06 15:35:10.144 -04:00 [INF] Content root path: /Users/urelmattis/Developer/test-project-agents/TestProject/src/TestProject.Web
+2025-10-06 15:35:21.792 -04:00 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:5000/api/workflows/start - null null
+2025-10-06 15:35:21.809 -04:00 [INF] CORS policy execution successful.
+2025-10-06 15:35:21.811 -04:00 [INF] Request finished HTTP/1.1 OPTIONS http://localhost:5000/api/workflows/start - 204 null null 20.2827ms
+2025-10-06 15:35:21.816 -04:00 [INF] Request starting HTTP/1.1 POST http://localhost:5000/api/workflows/start - application/json 40
+2025-10-06 15:35:21.817 -04:00 [INF] CORS policy execution successful.
+2025-10-06 15:35:21.820 -04:00 [INF] Executing endpoint 'HTTP: POST /api/workflows/start'
+2025-10-06 15:35:21.841 -04:00 [INF] Handling StartWorkflowCommand
+2025-10-06 15:35:21.841 -04:00 [INF] Property UserId : user123
+2025-10-06 15:35:21.841 -04:00 [INF] Property ETWDetails : test
+2025-10-06 15:35:21.842 -04:00 [INF] Starting ETW detector workflow for user user123 with ETW: test
+2025-10-06 15:35:21.843 -04:00 [INF] Starting ETW detector workflow for user user123
+2025-10-06 15:35:21.854 -04:00 [INF] Building ETW Detector Workflow using Microsoft Agent Framework
+2025-10-06 15:35:21.889 -04:00 [ERR] Failed to start workflow for user user123
+System.InvalidOperationException: Kusto cluster URL not configured
+   at TestProject.Infrastructure.Azure.KustoQueryService..ctor(IConfiguration configuration, ILogger`1 logger) in /Users/urelmattis/Developer/test-project-agents/TestProject/src/TestProject.Infrastructure/Azure/KustoQueryService.cs:line 17
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+   at System.Reflection.RuntimeConstructorInfo.Invoke(BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitRootCache(ServiceCallSite callSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitDisposeCache(ServiceCallSite transientCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.Resolve(ServiceCallSite callSite, ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.DynamicServiceProviderEngine.<>c__DisplayClass2_0.<RealizeService>b__0(ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngineScope.GetService(Type serviceType)
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)
+   at TestProject.Infrastructure.Agents.ETWDetectorWorkflow.BuildWorkflow() in /Users/urelmattis/Developer/test-project-agents/TestProject/src/TestProject.Infrastructure/Agents/ETWDetectorWorkflow.cs:line 52
+   at TestProject.Infrastructure.Agents.WorkflowOrchestrationService.StartWorkflowAsync(String userId, String etwDetails, CancellationToken cancellationToken) in /Users/urelmattis/Developer/test-project-agents/TestProject/src/TestProject.Infrastructure/Agents/WorkflowOrchestrationService.cs:line 22
+   at TestProject.UseCases.Workflows.StartWorkflow.StartWorkflowHandler.Handle(StartWorkflowCommand request, CancellationToken cancellationToken) in /Users/urelmattis/Developer/test-project-agents/TestProject/src/TestProject.UseCases/Workflows/StartWorkflow/StartWorkflowCommand.cs:line 17
+2025-10-06 15:35:21.892 -04:00 [INF] Handled StartWorkflowCommand with Ardalis.Result.Result`1[System.Guid] in 50 ms
+2025-10-06 15:35:21.898 -04:00 [INF] Executed endpoint 'HTTP: POST /api/workflows/start'
+2025-10-06 15:35:21.898 -04:00 [INF] Request finished HTTP/1.1 POST http://localhost:5000/api/workflows/start - 400 null application/problem+json; charset=utf-8 82.3705ms
+2025-10-06 15:35:57.397 -04:00 [INF] Application is shutting down...

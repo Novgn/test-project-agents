@@ -1,15 +1,30 @@
-# TestProject
+# TestProject - AI Agent Workflow System
 
-A Clean Architecture ASP.NET Core project built using the Ardalis Clean Architecture template.
+An intelligent, multi-agent workflow system for automated ETW (Event Tracing for Windows) detector creation using Microsoft Agent Framework, built on Ardalis Clean Architecture principles.
 
 ## Overview
 
+An intelligent system that automates the entire lifecycle of ETW detector creation through AI agent orchestration:
+
+1. **User Input** - Accepts ETW provider details via chat interface
+2. **Kusto Analysis** - Queries Azure Data Explorer for converters and detectors
+3. **Branch Creation** - Automatically creates Azure DevOps branches
+4. **PR Analysis** - Reviews historical PRs to learn patterns and conventions
+5. **Code Generation** - AI agents generate detector code
+6. **Pull Request Creation** - Creates PRs with human-in-the-loop approval
+7. **Deployment Monitoring** - Tracks deployment through pipelines
+8. **Results Analysis** - Fetches and analyzes detector performance
+9. **Customer Rollout** - Creates PRs to make detectors customer-facing
+
+### Architecture
+
 This project follows Clean Architecture principles with a clear separation of concerns:
 
-- **Core** - Domain model, entities, aggregates, and business logic
-- **UseCases** - Application services implementing CQRS commands and queries
-- **Infrastructure** - Data access, external services, and infrastructure concerns
-- **Web** - API endpoints using FastEndpoints
+- **Core** - Domain entities, aggregates, workflow models, and agent interfaces
+- **UseCases** - CQRS commands/queries for workflow management
+- **Infrastructure** - Agent orchestration, Azure services, data access
+- **Web** - FastEndpoints API + SignalR hub for real-time communication
+- **FrontEnd** - React + Vite + Fluent UI chat interface
 - **ServiceDefaults** - Aspire service defaults
 
 ## Project Structure

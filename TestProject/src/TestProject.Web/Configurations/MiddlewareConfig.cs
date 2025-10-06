@@ -7,6 +7,9 @@ public static class MiddlewareConfig
 {
   public static async Task<IApplicationBuilder> UseAppMiddlewareAndSeedDatabase(this WebApplication app)
   {
+    // CORS must be first in the pipeline
+    app.UseCors();
+
     if (app.Environment.IsDevelopment())
     {
       app.UseDeveloperExceptionPage();
@@ -21,7 +24,11 @@ public static class MiddlewareConfig
     app.UseFastEndpoints()
         .UseSwaggerGen(); // Includes AddFileServer and static files middleware
 
-    app.UseHttpsRedirection(); // Note this will drop Authorization headers
+    // Only use HTTPS redirection in production (it can interfere with CORS in development)
+    if (!app.Environment.IsDevelopment())
+    {
+      app.UseHttpsRedirection();
+    }
 
     await SeedDatabase(app);
 

@@ -1,0 +1,119 @@
+2025-10-05 17:17:50.105 -04:00 [INF] Registered 4 endpoints in 115 milliseconds.
+2025-10-05 17:17:50.141 -04:00 [INF] No validators found in the system!
+2025-10-05 17:17:50.608 -04:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+PRAGMA journal_mode = 'wal';
+2025-10-05 17:17:50.661 -04:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "DetectorResults" (
+    "Id" TEXT NOT NULL CONSTRAINT "PK_DetectorResults" PRIMARY KEY,
+    "DetectorId" TEXT NOT NULL,
+    "ExecutedAt" TEXT NOT NULL,
+    "EventsProcessed" INTEGER NOT NULL,
+    "AnomaliesDetected" INTEGER NOT NULL,
+    "ExecutionTimeMs" REAL NOT NULL,
+    "ResultSummary" TEXT NOT NULL,
+    "RawData" TEXT NULL
+);
+2025-10-05 17:17:50.662 -04:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "Detectors" (
+    "Id" TEXT NOT NULL CONSTRAINT "PK_Detectors" PRIMARY KEY,
+    "Name" TEXT NOT NULL,
+    "Description" TEXT NOT NULL,
+    "ETWProvider" TEXT NOT NULL,
+    "ConverterName" TEXT NOT NULL,
+    "BranchName" TEXT NOT NULL,
+    "PullRequestId" INTEGER NULL,
+    "PullRequestUrl" TEXT NULL,
+    "IsCustomerFacing" INTEGER NOT NULL,
+    "CreatedAt" TEXT NOT NULL,
+    "DeployedAt" TEXT NULL,
+    "Status" TEXT NOT NULL
+);
+2025-10-05 17:17:50.662 -04:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "WorkflowRuns" (
+    "Id" TEXT NOT NULL CONSTRAINT "PK_WorkflowRuns" PRIMARY KEY,
+    "UserId" TEXT NOT NULL,
+    "ETWDetails" TEXT NOT NULL,
+    "Status" TEXT NOT NULL,
+    "StartedAt" TEXT NOT NULL,
+    "CompletedAt" TEXT NULL,
+    "CurrentStepName" TEXT NULL,
+    "ErrorMessage" TEXT NULL
+);
+2025-10-05 17:17:50.662 -04:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "WorkflowSteps" (
+    "Id" TEXT NOT NULL CONSTRAINT "PK_WorkflowSteps" PRIMARY KEY,
+    "WorkflowRunId" TEXT NOT NULL,
+    "StepType" TEXT NOT NULL,
+    "StepName" TEXT NOT NULL,
+    "Description" TEXT NOT NULL,
+    "Status" TEXT NOT NULL,
+    "Input" TEXT NULL,
+    "Output" TEXT NULL,
+    "ErrorMessage" TEXT NULL,
+    "StartedAt" TEXT NOT NULL,
+    "CompletedAt" TEXT NULL,
+    "Sequence" INTEGER NOT NULL,
+    CONSTRAINT "FK_WorkflowSteps_WorkflowRuns_WorkflowRunId" FOREIGN KEY ("WorkflowRunId") REFERENCES "WorkflowRuns" ("Id") ON DELETE CASCADE
+);
+2025-10-05 17:17:50.663 -04:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_WorkflowSteps_WorkflowRunId" ON "WorkflowSteps" ("WorkflowRunId");
+2025-10-05 17:17:50.830 -04:00 [WRN] The ASP.NET Core developer certificate is not trusted. For information about trusting the ASP.NET Core developer certificate, see https://aka.ms/aspnet/https-trust-dev-cert
+2025-10-05 17:17:50.838 -04:00 [INF] Now listening on: https://localhost:57679
+2025-10-05 17:17:50.838 -04:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-10-05 17:17:50.838 -04:00 [INF] Hosting environment: Development
+2025-10-05 17:17:50.838 -04:00 [INF] Content root path: /Users/urelmattis/Developer/test-project-agents/TestProject/src/TestProject.Web
+2025-10-05 17:21:32.374 -04:00 [INF] Application is shutting down...
+2025-10-05 17:21:35.274 -04:00 [INF] Registered 4 endpoints in 86 milliseconds.
+2025-10-05 17:21:35.307 -04:00 [INF] No validators found in the system!
+2025-10-05 17:21:35.567 -04:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*) FROM "sqlite_master" WHERE "type" = 'table' AND "rootpage" IS NOT NULL;
+2025-10-05 17:21:35.722 -04:00 [WRN] The ASP.NET Core developer certificate is not trusted. For information about trusting the ASP.NET Core developer certificate, see https://aka.ms/aspnet/https-trust-dev-cert
+2025-10-05 17:21:35.730 -04:00 [INF] Now listening on: https://localhost:57679
+2025-10-05 17:21:35.730 -04:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-10-05 17:21:35.730 -04:00 [INF] Hosting environment: Development
+2025-10-05 17:21:35.731 -04:00 [INF] Content root path: /Users/urelmattis/Developer/test-project-agents/TestProject/src/TestProject.Web
+2025-10-05 17:24:02.252 -04:00 [INF] Application is shutting down...
+2025-10-05 17:24:04.778 -04:00 [INF] Registered 4 endpoints in 84 milliseconds.
+2025-10-05 17:24:04.808 -04:00 [INF] No validators found in the system!
+2025-10-05 17:24:05.062 -04:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*) FROM "sqlite_master" WHERE "type" = 'table' AND "rootpage" IS NOT NULL;
+2025-10-05 17:24:05.221 -04:00 [WRN] The ASP.NET Core developer certificate is not trusted. For information about trusting the ASP.NET Core developer certificate, see https://aka.ms/aspnet/https-trust-dev-cert
+2025-10-05 17:24:05.228 -04:00 [INF] Now listening on: https://localhost:57679
+2025-10-05 17:24:05.228 -04:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-10-05 17:24:05.228 -04:00 [INF] Hosting environment: Development
+2025-10-05 17:24:05.228 -04:00 [INF] Content root path: /Users/urelmattis/Developer/test-project-agents/TestProject/src/TestProject.Web
+2025-10-05 17:26:48.994 -04:00 [INF] Application is shutting down...
+2025-10-05 17:26:52.303 -04:00 [INF] Registered 4 endpoints in 87 milliseconds.
+2025-10-05 17:26:52.335 -04:00 [INF] No validators found in the system!
+2025-10-05 17:26:52.581 -04:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*) FROM "sqlite_master" WHERE "type" = 'table' AND "rootpage" IS NOT NULL;
+2025-10-05 17:26:52.619 -04:00 [INF] Now listening on: http://localhost:5000
+2025-10-05 17:26:52.619 -04:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-10-05 17:26:52.619 -04:00 [INF] Hosting environment: Development
+2025-10-05 17:26:52.619 -04:00 [INF] Content root path: /Users/urelmattis/Developer/test-project-agents/TestProject/src/TestProject.Web
+2025-10-05 17:26:59.537 -04:00 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:5000/api/workflows/start - null null
+2025-10-05 17:26:59.551 -04:00 [INF] CORS policy execution successful.
+2025-10-05 17:26:59.554 -04:00 [INF] Request finished HTTP/1.1 OPTIONS http://localhost:5000/api/workflows/start - 204 null null 18.0728ms
+2025-10-05 17:26:59.559 -04:00 [INF] Request starting HTTP/1.1 POST http://localhost:5000/api/workflows/start - application/json 40
+2025-10-05 17:26:59.560 -04:00 [INF] CORS policy execution successful.
+2025-10-05 17:26:59.563 -04:00 [INF] Executing endpoint 'HTTP: POST /api/workflows/start'
+2025-10-05 17:26:59.585 -04:00 [INF] Handling StartWorkflowCommand
+2025-10-05 17:26:59.585 -04:00 [INF] Property UserId : user123
+2025-10-05 17:26:59.586 -04:00 [INF] Property ETWDetails : test
+2025-10-05 17:26:59.587 -04:00 [INF] Executed endpoint 'HTTP: POST /api/workflows/start'
+2025-10-05 17:26:59.587 -04:00 [ERR] An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: No service for type 'MediatR.IRequestHandler`2[TestProject.UseCases.Workflows.StartWorkflow.StartWorkflowCommand,Ardalis.Result.Result`1[System.Guid]]' has been registered.
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)
+   at MediatR.Wrappers.RequestHandlerWrapperImpl`2.<>c__DisplayClass1_0.<Handle>g__Handler|0(CancellationToken t)
+   at Ardalis.SharedKernel.LoggingBehavior`2.Handle(TRequest request, RequestHandlerDelegate`1 next, CancellationToken cancellationToken)
+   at TestProject.Web.Workflows.Start.HandleAsync(StartWorkflowRequest req, CancellationToken ct) in /Users/urelmattis/Developer/test-project-agents/TestProject/src/TestProject.Web/Workflows/Start.cs:line 32
+   at FastEndpoints.Endpoint`2.ExecAsync(CancellationToken ct)
+   at FastEndpoints.Endpoint`2.ExecAsync(CancellationToken ct)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|7_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at NSwag.AspNetCore.Middlewares.SwaggerUiIndexMiddleware.Invoke(HttpContext context)
+   at NSwag.AspNetCore.Middlewares.RedirectToIndexMiddleware.Invoke(HttpContext context)
+   at NSwag.AspNetCore.Middlewares.OpenApiDocumentMiddleware.Invoke(HttpContext context)
+   at Ardalis.ListStartupServices.ShowAllServicesMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-10-05 17:26:59.594 -04:00 [INF] Request finished HTTP/1.1 POST http://localhost:5000/api/workflows/start - 500 null text/plain; charset=utf-8 34.7791ms

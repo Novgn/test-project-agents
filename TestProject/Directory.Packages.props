@@ -26,7 +26,7 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.6" />
     <PackageVersion Include="Microsoft.Extensions.Configuration" Version="9.0.6" />
     <PackageVersion Include="Microsoft.Extensions.Logging" Version="9.0.6" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.6" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.9" />
     <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.6" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageVersion Include="NSubstitute" Version="5.3.0" />
@@ -48,17 +48,20 @@
     <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.12.0" />
     <PackageVersion Include="Aspire.Hosting.Testing" Version="9.0.0" />
     <!-- Microsoft Agent Framework -->
-    <PackageVersion Include="Microsoft.Agents.AI" Version="1.2.0-preview" />
-    <PackageVersion Include="Microsoft.Agents.Workflows" Version="1.2.0-preview" />
-    <PackageVersion Include="Microsoft.Extensions.AI" Version="9.10.0-preview.1.25171.11" />
-    <PackageVersion Include="Microsoft.Extensions.AI.Abstractions" Version="9.10.0-preview.1.25171.11" />
+    <PackageVersion Include="Microsoft.Agents.AI" Version="1.0.0-preview.251002.1" />
+    <PackageVersion Include="Microsoft.Agents.AI.Workflows" Version="1.0.0-preview.251002.1" />
+    <PackageVersion Include="Microsoft.Agents.AI.OpenAI" Version="1.0.0-preview.251002.1" />
+    <PackageVersion Include="Microsoft.Extensions.AI" Version="9.9.1" />
+    <PackageVersion Include="Microsoft.Extensions.AI.Abstractions" Version="9.9.1" />
     <PackageVersion Include="Azure.AI.OpenAI" Version="2.1.0" />
     <!-- Azure Services -->
     <PackageVersion Include="Azure.Data.Tables" Version="12.9.1" />
-    <PackageVersion Include="Kusto.Data" Version="12.3.4" />
-    <PackageVersion Include="Microsoft.TeamFoundationServer.Client" Version="19.245.1" />
-    <PackageVersion Include="Microsoft.VisualStudio.Services.Client" Version="19.245.1" />
+    <PackageVersion Include="Microsoft.Azure.Kusto.Data" Version="14.0.1" />
+    <PackageVersion Include="Microsoft.TeamFoundationServer.Client" Version="19.246.0-preview" />
+    <PackageVersion Include="Microsoft.VisualStudio.Services.Client" Version="19.246.0-preview" />
     <!-- SignalR -->
     <PackageVersion Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.6" />
+    <!-- System packages (to resolve version conflicts) -->
+    <PackageVersion Include="System.Configuration.ConfigurationManager" Version="8.0.0" />
   </ItemGroup>
 </Project>

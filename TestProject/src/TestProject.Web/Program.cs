@@ -17,6 +17,18 @@ var appLogger = new SerilogLoggerFactory(logger)
 builder.Services.AddOptionConfigs(builder.Configuration, appLogger, builder);
 builder.Services.AddServiceConfigs(appLogger, builder);
 
+// Add CORS for React frontend (SSE compatible)
+builder.Services.AddCors(options =>
+{
+  options.AddDefaultPolicy(policy =>
+  {
+    policy.WithOrigins("http://localhost:5173") // Vite default port
+          .AllowAnyHeader()
+          .AllowAnyMethod()
+          .AllowCredentials()
+          .WithExposedHeaders("Content-Type", "Cache-Control", "Connection");
+  });
+});
 
 builder.Services.AddFastEndpoints()
                 .SwaggerDocument(o =>
