@@ -1,6 +1,6 @@
 using Microsoft.Agents.AI.Workflows;
 
-namespace TestProject.Core.Agents;
+namespace TestProject.Core.Interfaces;
 
 /// <summary>
 /// Service for orchestrating ETW detector workflows using Microsoft Agent Framework

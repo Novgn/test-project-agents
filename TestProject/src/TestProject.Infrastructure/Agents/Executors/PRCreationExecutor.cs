@@ -2,7 +2,7 @@ using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Reflection;
 using Microsoft.Extensions.AI;
 using TestProject.Core.AgentWorkflowAggregate;
-using TestProject.Core.Agents;
+using TestProject.Core.Interfaces;
 
 namespace TestProject.Infrastructure.Agents.Executors;
 

@@ -1,7 +1,7 @@
 using Kusto.Data;
 using Kusto.Data.Common;
 using Kusto.Data.Net.Client;
-using TestProject.Core.Agents;
+using TestProject.Core.Interfaces;
 
 namespace TestProject.Infrastructure.Azure;
 

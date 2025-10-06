@@ -1,6 +1,6 @@
 using System.Text.Json;
 using Microsoft.Agents.AI.Workflows;
-using TestProject.Core.Agents;
+using TestProject.Core.Interfaces;
 
 namespace TestProject.Web.Workflows;
 

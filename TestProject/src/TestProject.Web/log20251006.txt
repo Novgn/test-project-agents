@@ -81,3 +81,12 @@ System.InvalidOperationException: Kusto cluster URL not configured
 2025-10-06 15:35:21.898 -04:00 [INF] Executed endpoint 'HTTP: POST /api/workflows/start'
 2025-10-06 15:35:21.898 -04:00 [INF] Request finished HTTP/1.1 POST http://localhost:5000/api/workflows/start - 400 null application/problem+json; charset=utf-8 82.3705ms
 2025-10-06 15:35:57.397 -04:00 [INF] Application is shutting down...
+2025-10-06 16:12:56.631 -04:00 [INF] Registered 3 endpoints in 114 milliseconds.
+2025-10-06 16:12:56.668 -04:00 [INF] No validators found in the system!
+2025-10-06 16:12:56.947 -04:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*) FROM "sqlite_master" WHERE "type" = 'table' AND "rootpage" IS NOT NULL;
+2025-10-06 16:12:56.990 -04:00 [INF] Now listening on: http://localhost:5000
+2025-10-06 16:12:56.990 -04:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-10-06 16:12:56.990 -04:00 [INF] Hosting environment: Development
+2025-10-06 16:12:56.990 -04:00 [INF] Content root path: /Users/urelmattis/Developer/test-project-agents/TestProject/src/TestProject.Web
+2025-10-06 16:13:00.316 -04:00 [INF] Application is shutting down...

@@ -1,5 +1,5 @@
 using Microsoft.Extensions.AI;
-using TestProject.Core.Agents;
+using TestProject.Core.Interfaces;
 
 namespace TestProject.Core.AgentWorkflowAggregate;
 

@@ -1,7 +1,7 @@
 using System.Threading.Channels;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
-using TestProject.Core.Agents;
+using TestProject.Core.Interfaces;
 
 namespace TestProject.Infrastructure.Agents;
 

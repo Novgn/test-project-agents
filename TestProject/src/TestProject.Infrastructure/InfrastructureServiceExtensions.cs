@@ -1,4 +1,4 @@
-﻿using TestProject.Core.Agents;
+﻿using TestProject.Core.Interfaces;
 using TestProject.Infrastructure.Agents;
 using TestProject.Infrastructure.Agents.Executors;
 using TestProject.Infrastructure.Azure;

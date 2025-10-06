@@ -1,4 +1,4 @@
-namespace TestProject.Core.Agents;
+namespace TestProject.Core.Interfaces;
 
 /// <summary>
 /// Service for Azure DevOps operations
