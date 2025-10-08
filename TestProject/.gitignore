@@ -338,3 +338,20 @@ TestResults/
 *.orig
 *.rej
 *.swp
+
+# SQLite database files
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+*.db
+*.db-shm
+*.db-wal
+
+# Log files
+*.log
+*.txt
+log*.txt
+
+# appsettings with secrets (use appsettings.Development.json for local secrets)
+appsettings.*.json
+!appsettings.json

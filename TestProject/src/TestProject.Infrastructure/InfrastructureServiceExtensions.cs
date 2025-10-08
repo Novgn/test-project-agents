@@ -1,4 +1,8 @@
-﻿using TestProject.Core.Interfaces;
+﻿using Azure.AI.OpenAI;
+using Azure.Identity;
+using Microsoft.Extensions.AI;
+using System.ClientModel;
+using TestProject.Core.Interfaces;
 using TestProject.Infrastructure.Agents;
 using TestProject.Infrastructure.Agents.Executors;
 using TestProject.Infrastructure.Azure;
@@ -24,11 +28,39 @@ public static class InfrastructureServiceExtensions
     services.AddSingleton<IKustoQueryService, KustoQueryService>();
     services.AddSingleton<IAzureDevOpsService, AzureDevOpsService>();
 
+    // Azure OpenAI Chat Client for Microsoft Agent Framework
+    services.AddSingleton<IChatClient>(sp =>
+    {
+      var endpoint = config["AzureOpenAI:Endpoint"] ?? throw new InvalidOperationException("Azure OpenAI endpoint not configured");
+      var deploymentName = config["AzureOpenAI:DeploymentName"] ?? throw new InvalidOperationException("Azure OpenAI deployment name not configured");
+      var apiKey = config["AzureOpenAI:ApiKey"];
+
+      AzureOpenAIClient azureClient;
+      if (!string.IsNullOrEmpty(apiKey))
+      {
+        // Use API Key authentication (development)
+        logger.LogInformation("Using API Key authentication for Azure OpenAI");
+        azureClient = new AzureOpenAIClient(new Uri(endpoint), new System.ClientModel.ApiKeyCredential(apiKey));
+      }
+      else
+      {
+        // Use DefaultAzureCredential (production - requires RBAC permissions)
+        logger.LogInformation("Using DefaultAzureCredential for Azure OpenAI");
+        azureClient = new AzureOpenAIClient(new Uri(endpoint), new DefaultAzureCredential());
+      }
+
+      return azureClient.GetChatClient(deploymentName).AsIChatClient();
+    });
+
     // Microsoft Agent Framework Workflow Services
+    services.AddSingleton<IConversationService, ConversationService>();
+    services.AddSingleton<ConversationalChatService>();
+    services.AddSingleton<WorkflowContextProvider>();
     services.AddSingleton<ETWDetectorWorkflow>();
     services.AddSingleton<IWorkflowOrchestrationService, WorkflowOrchestrationService>();
 
     // Workflow Executors (must be registered for DI)
+    services.AddTransient<AIValidationAgent>();
     services.AddTransient<KustoQueryExecutor>();
     services.AddTransient<BranchCreationExecutor>();
     services.AddTransient<PRCreationExecutor>();

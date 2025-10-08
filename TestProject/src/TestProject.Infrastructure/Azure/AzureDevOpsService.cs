@@ -1,29 +1,78 @@
+using Azure.Core;
+using Azure.Identity;
 using Microsoft.TeamFoundation.SourceControl.WebApi;
-using Microsoft.VisualStudio.Services.Common;
 using Microsoft.VisualStudio.Services.WebApi;
 using TestProject.Core.Interfaces;
+using Microsoft.VisualStudio.Services.OAuth;
 
 namespace TestProject.Infrastructure.Azure;
 
 public class AzureDevOpsService : IAzureDevOpsService
 {
-  private readonly VssConnection _connection;
-  private readonly GitHttpClient _gitClient;
+  private readonly TokenCredential _credential;
+  private readonly string _organizationUrl;
   private readonly string _projectName;
   private readonly string _repositoryId;
   private readonly ILogger<AzureDevOpsService> _logger;
+  private GitHttpClient? _gitClient;
+  private readonly SemaphoreSlim _initLock = new(1, 1);
 
   public AzureDevOpsService(IConfiguration configuration, ILogger<AzureDevOpsService> logger)
   {
     _logger = logger;
-    var organizationUrl = configuration["AzureDevOps:OrganizationUrl"] ?? throw new InvalidOperationException("Azure DevOps organization URL not configured");
-    var personalAccessToken = configuration["AzureDevOps:PAT"] ?? throw new InvalidOperationException("Azure DevOps PAT not configured");
+    _organizationUrl = configuration["AzureDevOps:OrganizationUrl"] ?? throw new InvalidOperationException("Azure DevOps organization URL not configured");
     _projectName = configuration["AzureDevOps:ProjectName"] ?? throw new InvalidOperationException("Azure DevOps project name not configured");
     _repositoryId = configuration["AzureDevOps:RepositoryId"] ?? throw new InvalidOperationException("Azure DevOps repository ID not configured");
 
-    var credentials = new VssBasicCredential(string.Empty, personalAccessToken);
-    _connection = new VssConnection(new Uri(organizationUrl), credentials);
-    _gitClient = _connection.GetClient<GitHttpClient>();
+    // Use Azure AD authentication with DefaultAzureCredential
+    // This supports: Managed Identity, Azure CLI, Visual Studio, Environment Variables, Interactive Browser
+    // To use this locally, run: az login
+    _credential = new DefaultAzureCredential(new DefaultAzureCredentialOptions
+    {
+      ExcludeInteractiveBrowserCredential = false // Allow browser login as fallback
+    });
+
+    _logger.LogInformation("Azure DevOps service initialized. Authentication will occur on first use.");
+  }
+
+  private async Task<GitHttpClient> GetGitClientAsync(CancellationToken cancellationToken)
+  {
+    if (_gitClient != null)
+      return _gitClient;
+
+    await _initLock.WaitAsync(cancellationToken);
+    try
+    {
+      if (_gitClient != null)
+        return _gitClient;
+
+      _logger.LogInformation("Authenticating to Azure DevOps...");
+
+      // Get Azure AD token for Azure DevOps
+      var accessToken = await _credential.GetTokenAsync(
+        new TokenRequestContext(new[] { "499b84ac-1321-427f-aa17-267ca6975798/.default" }), // Azure DevOps scope
+        cancellationToken);
+
+      _logger.LogInformation("Token acquired successfully");
+
+      var vssCredential = new VssOAuthAccessTokenCredential(accessToken.Token);
+      var connection = new VssConnection(new Uri(_organizationUrl), vssCredential);
+      _gitClient = await connection.GetClientAsync<GitHttpClient>(cancellationToken);
+
+      _logger.LogInformation("Connected to Azure DevOps using Azure AD authentication");
+      return _gitClient;
+    }
+    catch (AuthenticationFailedException ex)
+    {
+      _logger.LogError(ex, "Azure AD authentication failed. Please run 'az login' or configure credentials.");
+      throw new InvalidOperationException(
+        "Failed to authenticate to Azure DevOps. Please ensure you are logged in via Azure CLI (run 'az login') or have valid credentials configured.",
+        ex);
+    }
+    finally
+    {
+      _initLock.Release();
+    }
   }
 
   public async Task<string> CreateBranchAsync(
@@ -35,8 +84,10 @@ public class AzureDevOpsService : IAzureDevOpsService
 
     try
     {
+      var gitClient = await GetGitClientAsync(cancellationToken);
+
       // Get base branch reference
-      var baseRef = await _gitClient.GetRefsAsync(
+      var baseRef = await gitClient.GetRefsAsync(
         _repositoryId,
         filter: $"heads/{baseBranch}",
         cancellationToken: cancellationToken);
@@ -51,7 +102,7 @@ public class AzureDevOpsService : IAzureDevOpsService
         NewObjectId = baseCommit
       };
 
-      await _gitClient.UpdateRefsAsync(
+      await gitClient.UpdateRefsAsync(
         new[] { newBranchRef },
         _repositoryId,
         cancellationToken: cancellationToken);
@@ -107,7 +158,8 @@ public class AzureDevOpsService : IAzureDevOpsService
         }
       };
 
-      await _gitClient.CreatePushAsync(push, _repositoryId, cancellationToken: cancellationToken);
+      var gitClient = await GetGitClientAsync(cancellationToken);
+      await gitClient.CreatePushAsync(push, _repositoryId, cancellationToken: cancellationToken);
       _logger.LogInformation("Files committed successfully to {BranchName}", branchName);
     }
     catch (Exception ex)
@@ -128,6 +180,8 @@ public class AzureDevOpsService : IAzureDevOpsService
 
     try
     {
+      var gitClient = await GetGitClientAsync(cancellationToken);
+
       var pr = new GitPullRequest
       {
         SourceRefName = $"refs/heads/{sourceBranch}",
@@ -136,7 +190,7 @@ public class AzureDevOpsService : IAzureDevOpsService
         Description = description
       };
 
-      var createdPr = await _gitClient.CreatePullRequestAsync(
+      var createdPr = await gitClient.CreatePullRequestAsync(
         pr,
         _repositoryId,
         cancellationToken: cancellationToken);
@@ -166,12 +220,14 @@ public class AzureDevOpsService : IAzureDevOpsService
 
     try
     {
+      var gitClient = await GetGitClientAsync(cancellationToken);
+
       var searchCriteria = new GitPullRequestSearchCriteria
       {
         Status = PullRequestStatus.Completed
       };
 
-      var pullRequests = await _gitClient.GetPullRequestsAsync(
+      var pullRequests = await gitClient.GetPullRequestsAsync(
         _repositoryId,
         searchCriteria,
         top: count,
@@ -225,7 +281,9 @@ public class AzureDevOpsService : IAzureDevOpsService
 
     try
     {
-      var pr = await _gitClient.GetPullRequestAsync(
+      var gitClient = await GetGitClientAsync(cancellationToken);
+
+      var pr = await gitClient.GetPullRequestAsync(
         _repositoryId,
         pullRequestId,
         cancellationToken: cancellationToken);
@@ -261,7 +319,9 @@ public class AzureDevOpsService : IAzureDevOpsService
     {
       try
       {
-        var pr = await _gitClient.GetPullRequestAsync(
+        var gitClient = await GetGitClientAsync(cancellationToken);
+
+        var pr = await gitClient.GetPullRequestAsync(
           _repositoryId,
           pullRequestId,
           cancellationToken: cancellationToken);
@@ -286,7 +346,9 @@ public class AzureDevOpsService : IAzureDevOpsService
 
   private async Task<string> GetLatestCommitAsync(string branchName, CancellationToken cancellationToken)
   {
-    var refs = await _gitClient.GetRefsAsync(
+    var gitClient = await GetGitClientAsync(cancellationToken);
+
+    var refs = await gitClient.GetRefsAsync(
       _repositoryId,
       filter: $"heads/{branchName}",
       cancellationToken: cancellationToken);

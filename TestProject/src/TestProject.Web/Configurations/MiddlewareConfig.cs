@@ -1,4 +1,5 @@
 ﻿using Ardalis.ListStartupServices;
+using TestProject.Infrastructure.Agents;
 using TestProject.Infrastructure.Data;
 
 namespace TestProject.Web.Configurations;
@@ -8,7 +9,7 @@ public static class MiddlewareConfig
   public static async Task<IApplicationBuilder> UseAppMiddlewareAndSeedDatabase(this WebApplication app)
   {
     // CORS must be first in the pipeline
-    app.UseCors();
+    app.UseCors("AllowFrontend");
 
     if (app.Environment.IsDevelopment())
     {
@@ -21,8 +22,19 @@ public static class MiddlewareConfig
       app.UseHsts();
     }
 
-    app.UseFastEndpoints()
+    // Configure FastEndpoints with global CORS
+    app.UseFastEndpoints(config =>
+        {
+          config.Endpoints.Configurator = ep =>
+          {
+            ep.Options(b => b.RequireCors("AllowFrontend"));
+          };
+        })
         .UseSwaggerGen(); // Includes AddFileServer and static files middleware
+
+    // Map SignalR hub for real-time conversation messages with CORS
+    app.MapHub<ConversationHub>("/hubs/conversation")
+       .RequireCors("AllowFrontend");
 
     // Only use HTTPS redirection in production (it can interfere with CORS in development)
     if (!app.Environment.IsDevelopment())

@@ -1,11 +1,11 @@
 import { FluentProvider, webLightTheme } from '@fluentui/react-components';
-import { WorkflowChat } from './components/WorkflowChat';
+import { ConversationalChat } from './components/ConversationalChat';
 import './App.css';
 
 function App() {
   return (
     <FluentProvider theme={webLightTheme}>
-      <WorkflowChat />
+      <ConversationalChat />
     </FluentProvider>
   );
 }

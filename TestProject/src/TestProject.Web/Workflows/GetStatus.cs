@@ -13,6 +13,7 @@ public class GetStatus(IMediator mediator) : Endpoint<GetStatusRequest, Workflow
   {
     Get("/api/workflows/{workflowId}/status");
     AllowAnonymous();
+    Options(x => x.RequireCors());
     Summary(s =>
     {
       s.Summary = "Get workflow status";

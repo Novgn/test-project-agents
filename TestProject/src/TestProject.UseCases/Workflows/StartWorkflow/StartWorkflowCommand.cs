@@ -17,6 +17,7 @@ public class StartWorkflowHandler(
       var workflowId = await workflowService.StartWorkflowAsync(
         request.UserId,
         request.ETWDetails,
+        existingThreadId: null,
         cancellationToken);
 
       logger.LogInformation("Workflow {WorkflowId} started successfully using Microsoft Agent Framework", workflowId);

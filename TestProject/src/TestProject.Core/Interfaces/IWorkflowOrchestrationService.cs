@@ -10,7 +10,7 @@ public interface IWorkflowOrchestrationService
   /// <summary>
   /// Starts a new ETW detector workflow
   /// </summary>
-  Task<Guid> StartWorkflowAsync(string userId, string etwDetails, CancellationToken cancellationToken = default);
+  Task<Guid> StartWorkflowAsync(string userId, string etwDetails, Guid? existingThreadId = null, CancellationToken cancellationToken = default);
 
   /// <summary>
   /// Gets the result of a completed workflow
@@ -21,4 +21,9 @@ public interface IWorkflowOrchestrationService
   /// Streams workflow events in real-time
   /// </summary>
   IAsyncEnumerable<WorkflowEvent> StreamWorkflowEventsAsync(Guid workflowId, CancellationToken cancellationToken = default);
+
+  /// <summary>
+  /// Gets the conversation thread ID associated with a workflow
+  /// </summary>
+  Guid? GetThreadIdForWorkflow(Guid workflowId);
 }

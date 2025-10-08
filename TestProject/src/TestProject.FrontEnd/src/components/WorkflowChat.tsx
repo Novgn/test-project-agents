@@ -77,6 +77,7 @@ export const WorkflowChat = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
+  const workflowCompletedRef = useRef(false);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -98,30 +99,43 @@ export const WorkflowChat = () => {
 
     let message = '';
     switch (event.type) {
+      case 'SuperStepStartedEvent':
       case 'WorkflowStartedEvent':
-        message = '🚀 Workflow started...';
+        message = 'Starting the AI agent workflow...';
         break;
+      case 'ExecutorInvokedEvent':
       case 'ExecutorInvokeEvent':
-        message = `⚙️ Executing: ${event.data.executor}`;
+        message = `Working on ${event.data.executor || 'the next step'}...`;
         break;
+      case 'ExecutorCompletedEvent':
       case 'ExecutorCompleteEvent':
-        message = `✅ Completed: ${event.data.executor}`;
+        message = `Finished ${event.data.executor || 'step'} successfully`;
+        break;
+      case 'SuperStepCompletedEvent':
+        message = 'All done! The workflow has completed successfully.';
+        workflowCompletedRef.current = true;
+        setIsLoading(false);
+        setIsConnected(false);
         break;
       case 'WorkflowOutputEvent':
-        message = event.data.output || 'Workflow completed';
+        message = event.data.output || 'Workflow completed successfully!';
+        workflowCompletedRef.current = true;
         setIsLoading(false);
         setIsConnected(false);
         break;
       case 'WorkflowErrorEvent':
-        message = `❌ Error: ${event.data.message}`;
+        message = `Something went wrong: ${event.data.message || 'An error occurred'}`;
+        workflowCompletedRef.current = true;
         setIsLoading(false);
         setIsConnected(false);
         break;
       default:
-        message = event.data.message || `Event: ${event.type}`;
+        message = event.data.message || `${event.type.replace('Event', '')}`;
     }
 
-    addMessage(message, 'agent', event.type);
+    // Only show event type badge for errors or if in debug mode
+    const showEventType = event.type === 'WorkflowErrorEvent' ? event.type : undefined;
+    addMessage(message, 'agent', showEventType);
   };
 
   const handleSendMessage = async () => {
@@ -131,6 +145,7 @@ export const WorkflowChat = () => {
     addMessage(userMessage, 'user');
     setInputValue('');
     setIsLoading(true);
+    workflowCompletedRef.current = false;
 
     try {
       // Start new workflow
@@ -146,7 +161,10 @@ export const WorkflowChat = () => {
         handleWorkflowEvent,
         (error) => {
           console.error('SSE Error:', error);
-          addMessage('Connection lost. Workflow may still be running.', 'agent');
+          // Only show error if workflow hasn't completed normally
+          if (!workflowCompletedRef.current) {
+            addMessage('Connection interrupted. The workflow may still be processing.', 'agent');
+          }
           setIsConnected(false);
           setIsLoading(false);
         }

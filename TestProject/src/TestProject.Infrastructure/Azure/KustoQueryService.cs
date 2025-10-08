@@ -1,3 +1,4 @@
+using Azure.Identity;
 using Kusto.Data;
 using Kusto.Data.Common;
 using Kusto.Data.Net.Client;
@@ -14,11 +15,11 @@ public class KustoQueryService : IKustoQueryService
   public KustoQueryService(IConfiguration configuration, ILogger<KustoQueryService> logger)
   {
     _logger = logger;
-    var clusterUrl = configuration["Kusto:ClusterUrl"] ?? throw new InvalidOperationException("Kusto cluster URL not configured");
-    _databaseName = configuration["Kusto:DatabaseName"] ?? throw new InvalidOperationException("Kusto database name not configured");
+    var clusterUrl = configuration["AzureKusto:ClusterUri"] ?? throw new InvalidOperationException("Kusto cluster URL not configured");
+    _databaseName = configuration["AzureKusto:Database"] ?? throw new InvalidOperationException("Kusto database name not configured");
 
     var kcsb = new KustoConnectionStringBuilder(clusterUrl)
-      .WithAadUserPromptAuthentication();
+      .WithAadAzureTokenCredentialsAuthentication(new DefaultAzureCredential());
 
     _queryProvider = KustoClientFactory.CreateCslQueryProvider(kcsb);
   }
@@ -61,6 +62,23 @@ public class KustoQueryService : IKustoQueryService
         configuration
       );
     }
+    catch (Kusto.Data.Exceptions.SemanticException ex)
+    {
+      // Tables don't exist yet in development - return empty results
+      _logger.LogWarning(ex, "Kusto tables not found for ETW provider: {Provider}. Returning empty results.", etwProvider);
+
+      var configuration = new Dictionary<string, string>
+      {
+        ["SamplingRate"] = "100",
+        ["BufferSize"] = "1024"
+      };
+
+      return new KustoQueryResult(
+        Array.Empty<string>(),
+        Array.Empty<string>(),
+        configuration
+      );
+    }
     catch (Exception ex)
     {
       _logger.LogError(ex, "Error querying Kusto for ETW provider: {Provider}", etwProvider);
@@ -77,9 +95,12 @@ public class KustoQueryService : IKustoQueryService
 
     try
     {
+      // TODO: Replace string interpolation with proper Kusto query parameterization
+      // to prevent KQL injection attacks. For now, sanitize input.
+      var sanitizedDetectorName = detectorName.Replace("'", "''"); // Escape single quotes
       var query = $@"
                 DetectorExecutions
-                | where DetectorName == '{detectorName}' and Timestamp >= datetime({since:yyyy-MM-ddTHH:mm:ss}Z)
+                | where DetectorName == '{sanitizedDetectorName}' and Timestamp >= datetime({since:yyyy-MM-ddTHH:mm:ss}Z)
                 | summarize
                     TotalExecutions = count(),
                     AnomaliesDetected = countif(HasAnomaly == true),

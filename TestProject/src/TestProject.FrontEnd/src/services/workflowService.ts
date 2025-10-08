@@ -1,3 +1,5 @@
+import * as signalR from '@microsoft/signalr';
+
 export interface WorkflowEvent {
   type: string;
   timestamp: string;
@@ -8,83 +10,182 @@ export interface WorkflowEvent {
   };
 }
 
+export interface ConversationMessage {
+  id: string;
+  type: string;
+  content: string;
+  data?: any;
+  timestamp: string;
+}
+
+export interface ApprovalRequest {
+  id: string;
+  question: string;
+  context: string;
+  data?: any;
+  step: string;
+}
+
 export class WorkflowService {
-  private eventSource: EventSource | null = null;
+  private connection: signalR.HubConnection | null = null;
 
   /**
-   * Start a new workflow
+   * Start a new conversational chat session
    */
-  async startWorkflow(userId: string, etwDetails: string): Promise<string> {
+  async startChat(userId: string, initialMessage: string): Promise<string> {
     try {
-      const response = await fetch('http://localhost:5000/api/workflows/start', {
+      const response = await fetch('/api/chat/start', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           userId,
-          etwDetails,
+          initialMessage,
         }),
       });
 
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Server error:', errorText);
-        throw new Error(`Failed to start workflow: ${response.status} ${response.statusText}`);
+        throw new Error(`Failed to start chat: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
-      return data.workflowId; // The workflow ID
+      return data.threadId; // The thread ID
     } catch (error) {
-      console.error('Error starting workflow:', error);
+      console.error('Error starting chat:', error);
       throw error;
     }
   }
 
   /**
-   * Stream workflow events using Server-Sent Events
+   * Send a message in an existing chat conversation
    */
-  streamWorkflowEvents(
-    workflowId: string,
-    onEvent: (event: WorkflowEvent) => void,
-    onError?: (error: Event) => void
-  ): () => void {
-    // Close existing connection if any
-    this.disconnect();
+  async sendMessage(threadId: string, message: string): Promise<string> {
+    try {
+      const response = await fetch('/api/chat/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          threadId,
+          message,
+        }),
+      });
 
-    // Create new EventSource connection
-    this.eventSource = new EventSource(
-      `http://localhost:5000/api/workflows/${workflowId}/stream`
-    );
-
-    this.eventSource.onmessage = (event) => {
-      try {
-        const workflowEvent: WorkflowEvent = JSON.parse(event.data);
-        onEvent(workflowEvent);
-      } catch (error) {
-        console.error('Failed to parse event:', error);
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Server error:', errorText);
+        throw new Error(`Failed to send message: ${response.status} ${response.statusText}`);
       }
-    };
 
-    this.eventSource.onerror = (error) => {
-      console.error('EventSource error:', error);
+      const data = await response.json();
+      return data.response; // The AI response
+    } catch (error) {
+      console.error('Error sending message:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Stream conversation messages using SignalR
+   */
+  async streamConversationMessages(
+    threadId: string,
+    onMessage: (message: ConversationMessage) => void,
+    onError?: (error: any) => void
+  ): Promise<() => void> {
+    // Close existing connection if any
+    await this.disconnect();
+
+    // Create new SignalR connection
+    this.connection = new signalR.HubConnectionBuilder()
+      .withUrl('/hubs/conversation')
+      .withAutomaticReconnect()
+      .build();
+
+    // Set up message handler
+    this.connection.on('ReceiveMessage', (message: ConversationMessage) => {
+      console.log('Received message from SignalR:', message);
+      onMessage(message);
+    });
+
+    // Handle connection errors
+    this.connection.onclose((error) => {
+      console.error('SignalR connection closed:', error);
+      if (onError && error) {
+        onError(error);
+      }
+    });
+
+    try {
+      // Start the connection
+      await this.connection.start();
+      console.log('SignalR connected successfully');
+
+      // Join the thread group to receive messages (using threadId as the group)
+      await this.connection.invoke('JoinWorkflow', threadId);
+      console.log(`Joined thread group: ${threadId}`);
+    } catch (error) {
+      console.error('Error connecting to SignalR:', error);
       if (onError) {
         onError(error);
       }
-      this.disconnect();
-    };
+    }
 
     // Return cleanup function
     return () => this.disconnect();
   }
 
   /**
-   * Disconnect from SSE stream
+   * Disconnect from SignalR
    */
-  disconnect(): void {
-    if (this.eventSource) {
-      this.eventSource.close();
-      this.eventSource = null;
+  async disconnect(): Promise<void> {
+    if (this.connection) {
+      try {
+        await this.connection.stop();
+        console.log('SignalR disconnected');
+      } catch (error) {
+        console.error('Error disconnecting SignalR:', error);
+      }
+      this.connection = null;
+    }
+  }
+
+  /**
+   * Send approval response
+   */
+  async sendApprovalResponse(
+    workflowId: string,
+    approvalId: string,
+    approved: boolean,
+    feedback?: string
+  ): Promise<void> {
+    try {
+      const response = await fetch(
+        `/api/workflows/${workflowId}/approve`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            workflowId,
+            approvalId,
+            approved,
+            feedback,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to send approval: ${response.status} ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error('Error sending approval:', error);
+      throw error;
     }
   }
 }

@@ -17,18 +17,23 @@ var appLogger = new SerilogLoggerFactory(logger)
 builder.Services.AddOptionConfigs(builder.Configuration, appLogger, builder);
 builder.Services.AddServiceConfigs(appLogger, builder);
 
-// Add CORS for React frontend (SSE compatible)
+// Add CORS for React frontend (SignalR compatible)
+var corsOrigins = builder.Configuration.GetSection("CorsOrigins").Get<string[]>()
+                  ?? new[] { "http://localhost:5173" };
+
 builder.Services.AddCors(options =>
 {
-  options.AddDefaultPolicy(policy =>
+  options.AddPolicy("AllowFrontend", policy =>
   {
-    policy.WithOrigins("http://localhost:5173") // Vite default port
+    policy.WithOrigins(corsOrigins)
           .AllowAnyHeader()
           .AllowAnyMethod()
-          .AllowCredentials()
-          .WithExposedHeaders("Content-Type", "Cache-Control", "Connection");
+          .AllowCredentials();
   });
 });
+
+// Add SignalR for real-time conversation messages
+builder.Services.AddSignalR();
 
 builder.Services.AddFastEndpoints()
                 .SwaggerDocument(o =>

@@ -7,6 +7,8 @@ namespace TestProject.Infrastructure.Agents.Executors;
 
 public class DeploymentMonitorExecutor(
   IAzureDevOpsService devOpsService,
+  IConversationService conversationService,
+  WorkflowContextProvider contextProvider,
   ILogger<DeploymentMonitorExecutor> logger)
   : ReflectingExecutor<DeploymentMonitorExecutor>("DeploymentMonitorExecutor"),
     IMessageHandler<PRCreated, string>
@@ -15,12 +17,19 @@ public class DeploymentMonitorExecutor(
     PRCreated prCreated,
     IWorkflowContext context)
   {
+    // Get thread ID from context provider
+    var threadId = contextProvider.GetCurrentThreadId();
+
     logger.LogInformation("Monitoring deployment status for PR {PrId}", prCreated.PullRequestId);
+
+    await SendMessageAsync(threadId, "Monitoring deployment pipeline...");
 
     // Check deployment status
     var deploymentStatus = await devOpsService.GetDeploymentStatusAsync(
       prCreated.PullRequestId,
       CancellationToken.None);
+
+    await SendMessageAsync(threadId, $"✓ Deployment status: {deploymentStatus.Status}");
 
     var result = $@"
 ETW Detector Workflow Complete!
@@ -41,6 +50,19 @@ ETW Detector Workflow Complete!
 3. Monitor performance metrics after deployment
 ";
 
+    await SendMessageAsync(threadId, "🎉 Workflow completed successfully!");
+
     return result;
+  }
+
+  private async Task SendMessageAsync(Guid threadId, string content)
+  {
+    var message = new ConversationMessage
+    {
+      Id = Guid.NewGuid().ToString(),
+      Type = ConversationMessageType.AgentMessage,
+      Content = content
+    };
+    await conversationService.AddMessageAsync(threadId, message, CancellationToken.None);
   }
 }

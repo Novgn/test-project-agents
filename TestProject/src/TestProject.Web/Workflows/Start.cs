@@ -19,6 +19,7 @@ public class Start(IMediator mediator) : Endpoint<StartWorkflowRequest, StartWor
   {
     Post("/api/workflows/start");
     AllowAnonymous();
+    Options(x => x.RequireCors());
     Summary(s =>
     {
       s.Summary = "Start a new agent workflow";
