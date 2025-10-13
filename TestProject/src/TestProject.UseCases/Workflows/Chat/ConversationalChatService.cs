@@ -1,6 +1,4 @@
 using Microsoft.Extensions.AI;
-using TestProject.Core.AgentWorkflowAggregate;
-using TestProject.Core.Interfaces;
 
 using ChatMessage = Microsoft.Extensions.AI.ChatMessage;
 using ChatRole = Microsoft.Extensions.AI.ChatRole;
@@ -107,10 +105,10 @@ READY_TO_START_WORKFLOW";
 
   private List<ChatMessage> BuildChatMessages(ConversationState state, string currentUserMessage)
   {
-    var messages = new List<ChatMessage>();
-
-    // Add system prompt
-    messages.Add(new ChatMessage(
+    var messages = new List<ChatMessage>
+    {
+      // Add system prompt
+      new ChatMessage(
       ChatRole.System,
       "You are an ETW (Event Tracing for Windows) expert assistant helping users create detectors for their ETW providers.\n\n" +
       "Your goal is to have a natural conversation to understand:\n" +
@@ -139,7 +137,8 @@ READY_TO_START_WORKFLOW";
       "```json\n" +
       "{\"ProviderId\": \"Microsoft-Windows-Kernel-File\", \"RuleId\": \"FileCreationDetector\", \"Schema\": {\"EventIds\": [12], \"Keywords\": [\"FileCreate\"], \"SamplingRate\": 100}}\n" +
       "```\n\n" +
-      "READY_TO_START_WORKFLOW"));
+      "READY_TO_START_WORKFLOW")
+    };
 
     // Add conversation history as alternating user/agent messages
     foreach (var historyItem in state.ConversationHistory)
