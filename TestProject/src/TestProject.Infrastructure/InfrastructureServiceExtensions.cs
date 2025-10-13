@@ -1,14 +1,15 @@
 ﻿using Azure.AI.OpenAI;
 using Azure.Identity;
 using Microsoft.Extensions.AI;
-using System.ClientModel;
 using TestProject.Core.Interfaces;
-using TestProject.Infrastructure.Agents;
-using TestProject.Infrastructure.Agents.Executors;
-using TestProject.Infrastructure.Azure;
+using TestProject.Infrastructure.Services.Agents;
+using TestProject.Infrastructure.Services.Azure;
+using TestProject.Infrastructure.Services.Workflows;
+using TestProject.Infrastructure.Services.Conversation;
 using TestProject.Infrastructure.Data;
 
 namespace TestProject.Infrastructure;
+
 public static class InfrastructureServiceExtensions
 {
   public static IServiceCollection AddInfrastructureServices(
@@ -29,7 +30,7 @@ public static class InfrastructureServiceExtensions
     services.AddSingleton<IAzureDevOpsService, AzureDevOpsService>();
 
     // Azure OpenAI Chat Client for Microsoft Agent Framework
-    services.AddSingleton<IChatClient>(sp =>
+    services.AddSingleton(sp =>
     {
       var endpoint = config["AzureOpenAI:Endpoint"] ?? throw new InvalidOperationException("Azure OpenAI endpoint not configured");
       var deploymentName = config["AzureOpenAI:DeploymentName"] ?? throw new InvalidOperationException("Azure OpenAI deployment name not configured");
@@ -52,19 +53,18 @@ public static class InfrastructureServiceExtensions
       return azureClient.GetChatClient(deploymentName).AsIChatClient();
     });
 
-    // Microsoft Agent Framework Workflow Services
-    services.AddSingleton<IConversationService, ConversationService>();
-    services.AddSingleton<ConversationalChatService>();
+    // Infrastructure Services (Workflow Management)
     services.AddSingleton<WorkflowContextProvider>();
-    services.AddSingleton<ETWDetectorWorkflow>();
     services.AddSingleton<IWorkflowOrchestrationService, WorkflowOrchestrationService>();
+    services.AddSingleton<ETWDetectorWorkflow>();
 
-    // Workflow Executors (must be registered for DI)
+    // Workflow Agents (Microsoft Agent Framework - must be registered for DI)
     services.AddTransient<AIValidationAgent>();
-    services.AddTransient<KustoQueryExecutor>();
-    services.AddTransient<BranchCreationExecutor>();
-    services.AddTransient<PRCreationExecutor>();
-    services.AddTransient<DeploymentMonitorExecutor>();
+    services.AddTransient<KustoQueryAgent>();
+    services.AddTransient<BranchCreationAgent>();
+    services.AddTransient<CodeGenerationAgent>();
+    services.AddTransient<PRCreationAgent>();
+    services.AddTransient<DeploymentMonitorAgent>();
 
     logger.LogInformation("{Project} services registered with Microsoft Agent Framework", "Infrastructure");
 

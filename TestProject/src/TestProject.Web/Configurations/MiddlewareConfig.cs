@@ -1,5 +1,5 @@
 ﻿using Ardalis.ListStartupServices;
-using TestProject.Infrastructure.Agents;
+using TestProject.Web.Services;
 using TestProject.Infrastructure.Data;
 
 namespace TestProject.Web.Configurations;

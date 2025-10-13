@@ -1,16 +1,11 @@
-﻿using TestProject.Core.AgentWorkflowAggregate;
-using TestProject.Core.DetectorAggregate;
-
-namespace TestProject.Infrastructure.Data;
+﻿namespace TestProject.Infrastructure.Data;
 public class AppDbContext(DbContextOptions<AppDbContext> options,
   IDomainEventDispatcher? dispatcher) : DbContext(options)
 {
   private readonly IDomainEventDispatcher? _dispatcher = dispatcher;
 
-  public DbSet<WorkflowRun> WorkflowRuns => Set<WorkflowRun>();
-  public DbSet<WorkflowStep> WorkflowSteps => Set<WorkflowStep>();
-  public DbSet<Detector> Detectors => Set<Detector>();
-  public DbSet<DetectorResult> DetectorResults => Set<DetectorResult>();
+  // Note: Using Microsoft Agent Framework for workflow orchestration
+  // No DbSets needed - workflow state managed in-memory
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {

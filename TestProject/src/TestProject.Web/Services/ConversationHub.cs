@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.SignalR;
 using TestProject.Core.AgentWorkflowAggregate;
 using TestProject.Core.Interfaces;
 
-namespace TestProject.Infrastructure.Agents;
+namespace TestProject.Web.Services;
 
 /// <summary>
 /// SignalR hub for real-time conversation messages

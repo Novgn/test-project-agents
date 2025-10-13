@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.Services.WebApi;
 using TestProject.Core.Interfaces;
 using Microsoft.VisualStudio.Services.OAuth;
 
-namespace TestProject.Infrastructure.Azure;
+namespace TestProject.Infrastructure.Services.Azure;
 
 public class AzureDevOpsService : IAzureDevOpsService
 {

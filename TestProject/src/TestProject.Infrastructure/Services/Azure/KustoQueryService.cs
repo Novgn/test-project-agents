@@ -4,7 +4,7 @@ using Kusto.Data.Common;
 using Kusto.Data.Net.Client;
 using TestProject.Core.Interfaces;
 
-namespace TestProject.Infrastructure.Azure;
+namespace TestProject.Infrastructure.Services.Azure;
 
 public class KustoQueryService : IKustoQueryService
 {
@@ -25,25 +25,34 @@ public class KustoQueryService : IKustoQueryService
   }
 
   public async Task<KustoQueryResult> FindConvertersAndDetectorsAsync(
-    string etwProvider,
+    string providerId,
+    string ruleId,
     CancellationToken cancellationToken = default)
   {
-    _logger.LogInformation("Querying Kusto for converters and detectors for ETW provider: {Provider}", etwProvider);
+    _logger.LogInformation("Querying Kusto for converters and detectors for ProviderId: {ProviderId}, RuleId: {RuleId}", providerId, ruleId);
 
     try
     {
-      // Example Kusto query to find converters
+      // Sanitize inputs to prevent KQL injection
+      var sanitizedProviderId = providerId.Replace("'", "''");
+      var sanitizedRuleId = ruleId.Replace("'", "''");
+
+      // Kusto query to find converters using providerId and ruleId as unique identifiers
+      // ETW schema properties are stored as JSON and need to be parsed
       var converterQuery = $@"
                 Converters
-                | where ETWProvider == '{etwProvider}'
-                | project ConverterName
+                | where ProviderId == '{sanitizedProviderId}' and RuleId == '{sanitizedRuleId}'
+                | extend SchemaProperties = parse_json(ETWSchemaJson)
+                | project ConverterName, SchemaProperties
                 | distinct ConverterName
             ";
 
+      // Kusto query to find detectors using providerId and ruleId as unique identifiers
       var detectorQuery = $@"
                 Detectors
-                | where ETWProvider == '{etwProvider}'
-                | project DetectorName
+                | where ProviderId == '{sanitizedProviderId}' and RuleId == '{sanitizedRuleId}'
+                | extend SchemaProperties = parse_json(ETWSchemaJson)
+                | project DetectorName, SchemaProperties
                 | distinct DetectorName
             ";
 
@@ -65,7 +74,7 @@ public class KustoQueryService : IKustoQueryService
     catch (Kusto.Data.Exceptions.SemanticException ex)
     {
       // Tables don't exist yet in development - return empty results
-      _logger.LogWarning(ex, "Kusto tables not found for ETW provider: {Provider}. Returning empty results.", etwProvider);
+      _logger.LogWarning(ex, "Kusto tables not found for ProviderId: {ProviderId}, RuleId: {RuleId}. Returning empty results.", providerId, ruleId);
 
       var configuration = new Dictionary<string, string>
       {
@@ -81,7 +90,7 @@ public class KustoQueryService : IKustoQueryService
     }
     catch (Exception ex)
     {
-      _logger.LogError(ex, "Error querying Kusto for ETW provider: {Provider}", etwProvider);
+      _logger.LogError(ex, "Error querying Kusto for ProviderId: {ProviderId}, RuleId: {RuleId}", providerId, ruleId);
       throw;
     }
   }

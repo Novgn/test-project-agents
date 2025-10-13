@@ -5,7 +5,7 @@ using TestProject.Core.Interfaces;
 using ChatMessage = Microsoft.Extensions.AI.ChatMessage;
 using ChatRole = Microsoft.Extensions.AI.ChatRole;
 
-namespace TestProject.Infrastructure.Agents;
+namespace TestProject.UseCases.Workflows.Chat;
 
 /// <summary>
 /// Service that handles conversational chat using Azure OpenAI
@@ -73,9 +73,33 @@ public class ConversationalChatService(
       return "Great! That helps. Are there specific event IDs or keywords I should look for? Also, what sampling rate would you prefer?";
     }
 
-    if (lowerMessage.Contains("id") || lowerMessage.Contains("keyword") || lowerMessage.Contains("rate"))
+    if (lowerMessage.Contains("id") || lowerMessage.Contains("keyword") || lowerMessage.Contains("rate") || lowerMessage.Contains("works"))
     {
-      return "Perfect! I think I have enough information now. Let me start creating your ETW detector. READY_TO_START_WORKFLOW";
+      // Try to extract provider name from conversation
+      var providerName = "Microsoft-Windows-Kernel-File"; // Default
+      foreach (var history in state.ConversationHistory)
+      {
+        if (history.Contains("Microsoft-Windows", StringComparison.OrdinalIgnoreCase))
+        {
+          var parts = history.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+          foreach (var part in parts)
+          {
+            if (part.StartsWith("Microsoft-Windows", StringComparison.OrdinalIgnoreCase))
+            {
+              providerName = part.TrimEnd('.', ',', '!', '?');
+              break;
+            }
+          }
+        }
+      }
+
+      return $@"Perfect! I have everything I need. You want to monitor {providerName} for events.
+
+```json
+{{""ProviderId"": ""{providerName}"", ""RuleId"": ""Detector_{DateTime.UtcNow:yyyyMMddHHmmss}"", ""Schema"": {{""EventIds"": [10, 12], ""Keywords"": [""FileIO""], ""SamplingRate"": 100}}}}
+```
+
+READY_TO_START_WORKFLOW";
     }
 
     return $"I understand. Can you tell me more about what you're trying to achieve with '{userMessage}'?";
@@ -94,8 +118,28 @@ public class ConversationalChatService(
       "2. What events or patterns they want to detect\n" +
       "3. Any specific event IDs, keywords, or fields to monitor\n" +
       "4. The sampling rate or frequency\n\n" +
-      "Be conversational, helpful, and ask clarifying questions. Don't immediately jump into technical details.\n" +
-      "When you have enough information to create a detector, end your response with 'READY_TO_START_WORKFLOW'."));
+      "Be conversational, helpful, and ask clarifying questions. Don't immediately jump into technical details.\n\n" +
+      "When you have enough information to create a detector, you MUST:\n" +
+      "1. Summarize what you learned in a friendly way\n" +
+      "2. Output a JSON block with this exact format:\n" +
+      "```json\n" +
+      "{\n" +
+      "  \"ProviderId\": \"<ETW Provider ID or GUID>\",\n" +
+      "  \"RuleId\": \"<Detector Rule ID>\",\n" +
+      "  \"Schema\": {\n" +
+      "    \"EventIds\": [<event IDs>],\n" +
+      "    \"Keywords\": [\"<keywords>\"],\n" +
+      "    \"SamplingRate\": <rate>\n" +
+      "  }\n" +
+      "}\n" +
+      "```\n" +
+      "3. End your response with 'READY_TO_START_WORKFLOW'\n\n" +
+      "Example:\n" +
+      "Great! I have everything I need. You want to monitor Microsoft-Windows-Kernel-File for file creation events.\n\n" +
+      "```json\n" +
+      "{\"ProviderId\": \"Microsoft-Windows-Kernel-File\", \"RuleId\": \"FileCreationDetector\", \"Schema\": {\"EventIds\": [12], \"Keywords\": [\"FileCreate\"], \"SamplingRate\": 100}}\n" +
+      "```\n\n" +
+      "READY_TO_START_WORKFLOW"));
 
     // Add conversation history as alternating user/agent messages
     foreach (var historyItem in state.ConversationHistory)

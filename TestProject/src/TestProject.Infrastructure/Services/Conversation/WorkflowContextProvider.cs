@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 
-namespace TestProject.Infrastructure.Agents;
+namespace TestProject.Infrastructure.Services.Conversation;
 
 /// <summary>
 /// Provides workflow execution context across executors

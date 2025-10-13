@@ -6,9 +6,9 @@ namespace TestProject.Core.Interfaces;
 public interface IKustoQueryService
 {
   /// <summary>
-  /// Queries Kusto to find appropriate converters and detectors for ETW provider
+  /// Queries Kusto to find appropriate converters and detectors for ETW provider using providerId and ruleId
   /// </summary>
-  Task<KustoQueryResult> FindConvertersAndDetectorsAsync(string etwProvider, CancellationToken cancellationToken = default);
+  Task<KustoQueryResult> FindConvertersAndDetectorsAsync(string providerId, string ruleId, CancellationToken cancellationToken = default);
 
   /// <summary>
   /// Fetches detector execution results from Kusto

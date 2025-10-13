@@ -3,8 +3,9 @@ using Microsoft.Agents.AI.Workflows.Reflection;
 using Microsoft.Extensions.AI;
 using TestProject.Core.AgentWorkflowAggregate;
 using TestProject.Core.Interfaces;
+using TestProject.Infrastructure.Services.Conversation;
 
-namespace TestProject.Infrastructure.Agents.Executors;
+namespace TestProject.Infrastructure.Services.Agents;
 
 /// <summary>
 /// AI agent that validates ETW provider details and initiates the workflow execution

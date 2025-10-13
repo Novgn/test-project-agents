@@ -3,15 +3,16 @@ using Microsoft.Agents.AI.Workflows.Reflection;
 using Microsoft.Extensions.AI;
 using TestProject.Core.AgentWorkflowAggregate;
 using TestProject.Core.Interfaces;
+using TestProject.Infrastructure.Services.Conversation;
 
-namespace TestProject.Infrastructure.Agents.Executors;
+namespace TestProject.Infrastructure.Services.Agents;
 
-public class PRCreationExecutor(
+public class PRCreationAgent(
   IAzureDevOpsService devOpsService,
   IConversationService conversationService,
   WorkflowContextProvider contextProvider,
-  ILogger<PRCreationExecutor> logger)
-  : ReflectingExecutor<PRCreationExecutor>("PRCreationExecutor"),
+  ILogger<PRCreationAgent> logger)
+  : ReflectingExecutor<PRCreationAgent>("PRCreationAgent"),
     IMessageHandler<ChatMessage, PRCreated>
 {
   public async ValueTask<PRCreated> HandleAsync(

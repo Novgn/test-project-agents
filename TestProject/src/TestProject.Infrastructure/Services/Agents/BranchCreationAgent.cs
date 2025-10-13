@@ -2,15 +2,16 @@ using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Reflection;
 using TestProject.Core.AgentWorkflowAggregate;
 using TestProject.Core.Interfaces;
+using TestProject.Infrastructure.Services.Conversation;
 
-namespace TestProject.Infrastructure.Agents.Executors;
+namespace TestProject.Infrastructure.Services.Agents;
 
-public class BranchCreationExecutor(
+public class BranchCreationAgent(
   IAzureDevOpsService devOpsService,
   IConversationService conversationService,
   WorkflowContextProvider contextProvider,
-  ILogger<BranchCreationExecutor> logger)
-  : ReflectingExecutor<BranchCreationExecutor>("BranchCreationExecutor"),
+  ILogger<BranchCreationAgent> logger)
+  : ReflectingExecutor<BranchCreationAgent>("BranchCreationAgent"),
     IMessageHandler<BranchCreated, BranchCreated>
 {
   public async ValueTask<BranchCreated> HandleAsync(

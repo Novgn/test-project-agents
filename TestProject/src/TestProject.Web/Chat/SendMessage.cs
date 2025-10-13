@@ -1,6 +1,7 @@
+using System.Text.RegularExpressions;
 using TestProject.Core.AgentWorkflowAggregate;
 using TestProject.Core.Interfaces;
-using TestProject.Infrastructure.Agents;
+using TestProject.UseCases.Workflows.Chat;
 
 namespace TestProject.Web.Chat;
 
@@ -111,12 +112,51 @@ public class SendMessage(
   private string ExtractETWDetailsFromConversation(ConversationState? state)
   {
     if (state == null || state.ConversationHistory.Count == 0)
-      return "ETW Provider Details";
+    {
+      logger.LogWarning("No conversation state found, using default ETW details");
+      return CreateDefaultJson();
+    }
 
-    // Extract the first user message as ETW details
-    var firstUserMessage = state.ConversationHistory
-      .FirstOrDefault(msg => msg.StartsWith("User: "));
+    // Look for JSON in the conversation history (should be in the last AI message)
+    // Pattern matches: ```json { ... } ``` or just { ... }
+    var jsonPattern = @"```json\s*(\{.*?\})\s*```|\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}";
 
-    return firstUserMessage?.Substring(6) ?? "ETW Provider Details";
+    // Check recent messages (last 5) for JSON
+    var recentMessages = state.ConversationHistory.TakeLast(5).Reverse();
+    foreach (var message in recentMessages)
+    {
+      var matches = Regex.Matches(message, jsonPattern, RegexOptions.Singleline);
+      foreach (Match match in matches)
+      {
+        var jsonCandidate = match.Groups.Count > 1 && match.Groups[1].Success
+          ? match.Groups[1].Value.Trim()
+          : match.Value.Trim();
+
+        // Validate it has the required fields
+        if (jsonCandidate.Contains("ProviderId") && jsonCandidate.Contains("RuleId"))
+        {
+          logger.LogInformation("Extracted ETW JSON from conversation: {Json}", jsonCandidate);
+          return jsonCandidate;
+        }
+      }
+    }
+
+    logger.LogWarning("Could not find valid JSON in conversation, creating default");
+    return CreateDefaultJson();
+  }
+
+  private string CreateDefaultJson()
+  {
+    return """
+      {
+        "ProviderId": "Microsoft-Windows-Kernel-File",
+        "RuleId": "DefaultDetector",
+        "Schema": {
+          "EventIds": [10, 12],
+          "Keywords": ["FileIO"],
+          "SamplingRate": 100
+        }
+      }
+      """;
   }
 }

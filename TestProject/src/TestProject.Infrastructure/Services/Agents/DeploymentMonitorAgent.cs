@@ -2,15 +2,16 @@ using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Reflection;
 using TestProject.Core.AgentWorkflowAggregate;
 using TestProject.Core.Interfaces;
+using TestProject.Infrastructure.Services.Conversation;
 
-namespace TestProject.Infrastructure.Agents.Executors;
+namespace TestProject.Infrastructure.Services.Agents;
 
-public class DeploymentMonitorExecutor(
+public class DeploymentMonitorAgent(
   IAzureDevOpsService devOpsService,
   IConversationService conversationService,
   WorkflowContextProvider contextProvider,
-  ILogger<DeploymentMonitorExecutor> logger)
-  : ReflectingExecutor<DeploymentMonitorExecutor>("DeploymentMonitorExecutor"),
+  ILogger<DeploymentMonitorAgent> logger)
+  : ReflectingExecutor<DeploymentMonitorAgent>("DeploymentMonitorAgent"),
     IMessageHandler<PRCreated, string>
 {
   public async ValueTask<string> HandleAsync(

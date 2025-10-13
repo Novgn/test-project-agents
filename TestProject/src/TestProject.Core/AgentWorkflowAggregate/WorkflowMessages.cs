@@ -1,10 +1,12 @@
-using Microsoft.Extensions.AI;
-using TestProject.Core.Interfaces;
-
 namespace TestProject.Core.AgentWorkflowAggregate;
 
 // Message types for workflow communication
-public record ETWInput(string UserId, string ETWDetails);
+public record ETWInput(
+  string UserId,
+  string ProviderId,
+  string RuleId,
+  string ETWSchemaJson,
+  string ETWDetails);
 
 // After validation agent
 public record ValidationResult(bool IsValid, string Message, KustoQueryResult? KustoData, ETWInput Input);

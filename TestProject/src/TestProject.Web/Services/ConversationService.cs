@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.SignalR;
 using TestProject.Core.AgentWorkflowAggregate;
 using TestProject.Core.Interfaces;
 
-namespace TestProject.Infrastructure.Agents;
+namespace TestProject.Web.Services;
 
 /// <summary>
 /// Service that manages conversation threads for conversational AI workflow

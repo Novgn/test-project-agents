@@ -1,11 +1,11 @@
 using System.Collections.Concurrent;
-using System.Threading.Channels;
+using System.Text.Json;
 using Microsoft.Agents.AI.Workflows;
-using Microsoft.Extensions.AI;
 using TestProject.Core.AgentWorkflowAggregate;
 using TestProject.Core.Interfaces;
+using TestProject.Infrastructure.Services.Conversation;
 
-namespace TestProject.Infrastructure.Agents;
+namespace TestProject.Infrastructure.Services.Workflows;
 
 /// <summary>
 /// Service that manages ETW detector workflow execution using Microsoft Agent Framework
@@ -65,8 +65,40 @@ public class WorkflowOrchestrationService(
     _eventBuffers[workflowId] = eventBuffer;
     _workflowCompleted[workflowId] = false;
 
+    // Parse ETW details to extract providerId, ruleId, and schema
+    // Expected format: JSON with ProviderId, RuleId, and Schema properties
+    string providerId;
+    string ruleId;
+    string schemaJson;
+
+    try
+    {
+      using var doc = JsonDocument.Parse(etwDetails);
+      var root = doc.RootElement;
+
+      providerId = root.GetProperty("ProviderId").GetString()
+        ?? throw new InvalidOperationException("ProviderId not found in ETW details");
+      ruleId = root.GetProperty("RuleId").GetString()
+        ?? throw new InvalidOperationException("RuleId not found in ETW details");
+
+      // Schema properties are already in JSON format
+      if (root.TryGetProperty("Schema", out var schemaElement))
+      {
+        schemaJson = schemaElement.GetRawText();
+      }
+      else
+      {
+        schemaJson = "{}";
+      }
+    }
+    catch (JsonException ex)
+    {
+      logger.LogError(ex, "Failed to parse ETW details as JSON: {Details}", etwDetails);
+      throw new InvalidOperationException("ETW details must be valid JSON with ProviderId and RuleId", ex);
+    }
+
     // Create initial message for the workflow (ETWInput for AI agent)
-    var initialMessage = new ETWInput(userId, etwDetails);
+    var initialMessage = new ETWInput(userId, providerId, ruleId, schemaJson, etwDetails);
 
     // Start workflow execution in background
     _ = Task.Run(async () =>

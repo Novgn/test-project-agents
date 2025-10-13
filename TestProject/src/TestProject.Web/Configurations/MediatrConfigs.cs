@@ -1,7 +1,6 @@
 ﻿using Ardalis.SharedKernel;
-using MediatR;
 using System.Reflection;
-using TestProject.UseCases.Workflows.StartWorkflow;
+using TestProject.Core.AgentWorkflowAggregate;
 
 namespace TestProject.Web.Configurations;
 
@@ -12,7 +11,7 @@ public static class MediatrConfigs
     var mediatRAssemblies = new[]
       {
         Assembly.GetAssembly(typeof(IRepository<>)), // Core (SharedKernel)
-        Assembly.GetAssembly(typeof(StartWorkflowCommand)), // UseCases
+        Assembly.GetAssembly(typeof(ETWInput)), // Core
         Assembly.GetExecutingAssembly() // Web
       };
 
